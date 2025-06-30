@@ -178,7 +178,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
 
     res
@@ -199,8 +199,37 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export const logoutUser = async () => {
-  // code after writing middleware
+export const logoutUser = async (req: Request, res: Response) => {
+  const user = req?.user;
+
+  try {
+    await prisma.user.update({
+      where: { id: user?.id },
+      data: {
+        refreshToken: null,
+      },
+    });
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({
+        success: true,
+        message: "Logged out successfully",
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      data: error,
+      message: "Failed to logout",
+    });
+  }
 };
 
 export const verifyToken = async (req: Request, res: Response) => {
