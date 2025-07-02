@@ -17,3 +17,8 @@ export const tokenVerificationSchema = z.object({
   token: z.string(),
   setPassword: z.boolean(),
 });
+
+export const sendWelcomMailSchema = z.object({
+  firstname: z.string(),
+  email: z.string().email(),
+});

@@ -94,6 +94,7 @@ export const handleGoogleOAuthCallback = async (
         providerId: userData.sub,
         profilePicture: userData.picture,
         isVerified: userData.isVerified,
+        loginCount: 1,
       },
       update: {
         firstname: userData.name.split(" ")[0],
@@ -102,6 +103,9 @@ export const handleGoogleOAuthCallback = async (
         isVerified: userData.isVerified,
         profilePicture: userData.picture,
         email: userData.email,
+        loginCount: {
+          increment: 1,
+        },
       },
       omit: {
         password: true,
@@ -139,8 +143,10 @@ export const handleGoogleOAuthCallback = async (
     };
 
     // send mail
-    const emailTemplate = welcomeEmailTemplate(user.firstname);
-    await sendMail(user.email, "We welcome you to Foodly!", emailTemplate);
+    if (user.loginCount === 1) {
+      const emailTemplate = welcomeEmailTemplate(user.firstname);
+      await sendMail(user.email, "We welcome you to Foodly!", emailTemplate);
+    }
 
     res
       .status(200)

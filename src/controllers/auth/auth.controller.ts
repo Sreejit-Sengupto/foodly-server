@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   loginSchema,
   registrationSchema,
+  sendWelcomMailSchema,
   tokenVerificationSchema,
 } from "../../validation/auth";
 import { prisma } from "../../db";
@@ -15,8 +16,7 @@ import {
   verifyAcesssJWT,
 } from "../../utils/JWTTokens";
 import { FRONTEND_VERIFICATION_URL } from "../../constants";
-import { json } from "stream/consumers";
-import { JwtPayload } from "jsonwebtoken";
+import { welcomeEmailTemplate } from "../../utils/email-templates/welcome-email";
 
 export const registerUser = async (req: Request, res: Response) => {
   const parseRes = registrationSchema.safeParse(req.body);
@@ -169,6 +169,9 @@ export const loginUser = async (req: Request, res: Response) => {
       where: { id: user.id },
       data: {
         refreshToken,
+        loginCount: {
+          increment: 1,
+        },
       },
       omit: {
         password: true,
@@ -261,6 +264,34 @@ export const verifyToken = async (req: Request, res: Response) => {
     res.status(500).json({
       data: error,
       message: "Failed to verify token",
+    });
+  }
+};
+
+export const sendWelcomeMail = async (req: Request, res: Response) => {
+  const parseRes = sendWelcomMailSchema.safeParse(req.body);
+
+  if (!parseRes.success) {
+    res.status(400).json({
+      errors: parseRes.error.flatten(),
+    });
+    return;
+  }
+
+  const reqData = parseRes.data;
+
+  try {
+    const emailTemplate = welcomeEmailTemplate(reqData.firstname);
+    await sendMail(reqData.email, "We welcome you to Foodly!", emailTemplate);
+
+    res.status(200).json({
+      message: "Mail sent successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      data: error,
+      message: "Failed to send welcome mail",
     });
   }
 };

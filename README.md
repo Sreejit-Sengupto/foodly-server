@@ -227,10 +227,20 @@ src/
 
 ### Authentication
 
-| Method | Endpoint                       | Description           |
-| ------ | ------------------------------ | --------------------- |
-| `GET`  | `/api/v1/auth/google/url`      | Get Google OAuth URL  |
-| `GET`  | `/api/v1/auth/google/callback` | Google OAuth callback |
+| Method | Endpoint              | Description                   | Body                                              | Protected |
+| ------ | --------------------- | ----------------------------- | ------------------------------------------------- | --------- |
+| `POST` | `/register`           | Register new user with email  | `{ firstname, lastname?, email, password, role }` | No        |
+| `POST` | `/login`              | Login with email and password | `{ email, password }`                             | No        |
+| `POST` | `/verify-token`       | Verify JWT/email token        | `{ token, setPassword }`                          | No        |
+| `POST` | `/logout`             | Logout user (clear tokens)    | -                                                 | Yes       |
+| `POST` | `/send-welcome-mail`  | Send welcome mail to users    | `{ firstname, email }`                            | No        |
+
+#### Google OAuth
+
+| Method | Endpoint                        | Description           |
+| ------ | ------------------------------- | --------------------- |
+| `GET`  | `/api/v1/oauth/google/url`      | Get Google OAuth URL  |
+| `GET`  | `/api/v1/oauth/google/callback` | Google OAuth callback |
 
 ### Test Endpoint
 
@@ -257,6 +267,7 @@ model User {
   email          String   @unique
   password       String?
   refreshToken   String?
+  loginCount     Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
 }
