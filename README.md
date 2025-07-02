@@ -1,6 +1,7 @@
 # Foodly Server
 
 A Node.js/Express backend application for Foodly - a food booking platform - cut queues, enjoy your food!
+
 ## Features
 
 - 🔐 Google OAuth 2.0 Authentication
@@ -70,26 +71,28 @@ RESEND_API_KEY=your_resend_api_key
 
 #### Required Environment Variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/foodly` |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID | Get from Google Cloud Console |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | Get from Google Cloud Console |
-| `ACCESS_TOKEN_SECRET` | JWT access token secret | Generate a secure random string |
-| `REFRESH_TOKEN_SECRET` | JWT refresh token secret | Generate a secure random string |
-| `RESEND_API_KEY` | Resend email service API key | Get from Resend dashboard |
+| Variable               | Description                  | Example                                        |
+| ---------------------- | ---------------------------- | ---------------------------------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/foodly` |
+| `GOOGLE_CLIENT_ID`     | Google OAuth client ID       | Get from Google Cloud Console                  |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret   | Get from Google Cloud Console                  |
+| `ACCESS_TOKEN_SECRET`  | JWT access token secret      | Generate a secure random string                |
+| `REFRESH_TOKEN_SECRET` | JWT refresh token secret     | Generate a secure random string                |
+| `RESEND_API_KEY`       | Resend email service API key | Get from Resend dashboard                      |
 
 ## Database Setup
 
 ### 1. PostgreSQL Installation
 
 #### On macOS (using Homebrew):
+
 ```bash
 brew install postgresql
 brew services start postgresql
 ```
 
 #### On Ubuntu/Debian:
+
 ```bash
 sudo apt update
 sudo apt install postgresql postgresql-contrib
@@ -98,6 +101,7 @@ sudo systemctl enable postgresql
 ```
 
 #### On Windows:
+
 Download and install from [PostgreSQL official website](https://www.postgresql.org/download/windows/)
 
 ### 2. Create Database
@@ -129,17 +133,20 @@ npm run migrate
 
 ## Alternatively, you can also use Docker to setup the database in few steps:
 
-####  Pull the latest Postgres image
+#### Pull the latest Postgres image
+
 ```bash
 docker pull postgres:latest
 ```
 
 #### Create and run the container
+
 ```bash
 docker run --name<CONTAINER_NAME> -e POSTGRES_PASSWORD=your_secret -p 5432:5432 -d postgres
 ```
 
 #### Connection string
+
 `postgresql://postgres:<password>@localhost:5432/postgres`
 
 #### Run Database Migrations
@@ -185,10 +192,10 @@ The server will start on `http://localhost:3001`
 
 ### Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run migrate` | Run Prisma database migrations |
+| Script            | Description                              |
+| ----------------- | ---------------------------------------- |
+| `npm run dev`     | Start development server with hot reload |
+| `npm run migrate` | Run Prisma database migrations           |
 
 ### Project Structure
 
@@ -220,16 +227,26 @@ src/
 
 ### Authentication
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/v1/auth/google/url` | Get Google OAuth URL |
-| `GET` | `/api/v1/auth/google/callback` | Google OAuth callback |
+| Method | Endpoint              | Description                   | Body                                              | Protected |
+| ------ | --------------------- | ----------------------------- | ------------------------------------------------- | --------- |
+| `POST` | `/register`           | Register new user with email  | `{ firstname, lastname?, email, password, role }` | No        |
+| `POST` | `/login`              | Login with email and password | `{ email, password }`                             | No        |
+| `POST` | `/verify-token`       | Verify JWT/email token        | `{ token, setPassword }`                          | No        |
+| `POST` | `/logout`             | Logout user (clear tokens)    | -                                                 | Yes       |
+| `POST` | `/send-welcome-mail`  | Send welcome mail to users    | `{ firstname, email }`                            | No        |
+
+#### Google OAuth
+
+| Method | Endpoint                        | Description           |
+| ------ | ------------------------------- | --------------------- |
+| `GET`  | `/api/v1/oauth/google/url`      | Get Google OAuth URL  |
+| `GET`  | `/api/v1/oauth/google/callback` | Google OAuth callback |
 
 ### Test Endpoint
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/test` | Health check endpoint |
+| Method | Endpoint | Description           |
+| ------ | -------- | --------------------- |
+| `GET`  | `/test`  | Health check endpoint |
 
 ## Database Schema
 
@@ -250,6 +267,7 @@ model User {
   email          String   @unique
   password       String?
   refreshToken   String?
+  loginCount     Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
 }
@@ -274,47 +292,61 @@ model User {
 ### Common Issues
 
 #### 1. Database Connection Error
+
 ```
 Error: Can't reach database server
 ```
-**Solution**: 
+
+**Solution**:
+
 - Ensure PostgreSQL is running
 - Check DATABASE_URL in `.env`
 - Verify database exists
 
 #### 2. Prisma Client Error
+
 ```
 Error: Cannot find module '@prisma/client'
 ```
+
 **Solution**:
+
 ```bash
 npx prisma generate
 ```
 
 #### 3. Google OAuth Error
+
 ```
 Error: invalid_client
 ```
+
 **Solution**:
+
 - Verify GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET
 - Check redirect URI in Google Cloud Console
 
 #### 4. Email Sending Error
+
 ```
 Error: Invalid API key
 ```
+
 **Solution**:
+
 - Verify RESEND_API_KEY in `.env`
 - Check Resend dashboard for API key status
 
 ### Development Tips
 
 1. **Database Reset**: If you need to reset the database:
+
    ```bash
    npx prisma migrate reset
    ```
 
 2. **View Database**: Use Prisma Studio to view your data:
+
    ```bash
    npx prisma studio
    ```
@@ -358,6 +390,7 @@ This project is licensed under the ISC License.
 ## Support
 
 For issues and questions:
+
 1. Check the troubleshooting section
 2. Review the project documentation
 3. Create an issue in the repository

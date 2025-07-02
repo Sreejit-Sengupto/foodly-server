@@ -170,4 +170,4 @@ export const welcomeEmailTemplate = (username: string) => `<!DOCTYPE html>
     </div>
   </body>
 </html>
-`
+`;

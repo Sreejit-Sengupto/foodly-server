@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx nodemon ./src/index.ts",
-    "migrate": "npx prisma migrate dev --name init"
+    "migrate": "npx prisma generate && npx prisma migrate dev --name init",
+    "studio": "npx prisma studio",
+    "format": "npx prettier . --write"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +17,9 @@
     "@prisma/client": "^6.10.1",
     "@prisma/extension-accelerate": "^2.0.1",
     "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -25,7 +29,9 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
