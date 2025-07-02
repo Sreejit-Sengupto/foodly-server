@@ -17,6 +17,7 @@ import {
 } from "../../utils/JWTTokens";
 import { FRONTEND_VERIFICATION_URL } from "../../constants";
 import { welcomeEmailTemplate } from "../../utils/email-templates/welcome-email";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const registerUser = async (req: Request, res: Response) => {
   const parseRes = registrationSchema.safeParse(req.body);
@@ -292,6 +293,68 @@ export const sendWelcomeMail = async (req: Request, res: Response) => {
     res.status(500).json({
       data: error,
       message: "Failed to send welcome mail",
+    });
+  }
+};
+
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  const incomingRefreshToken = req.cookies.refreshToken;
+
+  if (!incomingRefreshToken) {
+    res.status(401).json({
+      message: "Unauthorized request",
+    });
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET!,
+    ) as JwtPayload;
+
+    const user = await prisma.user.findFirst({
+      where: { id: decodedToken.id },
+    });
+
+    if (!user) {
+      res.status(401).json({
+        message: "Invalid refresh token",
+      });
+      return;
+    }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      res.status(401).json({
+        message: "Refresh token is expired",
+      });
+    }
+
+    const options = {
+      httpOnly: true,
+      // secure: true
+    };
+
+    const accessToken = generateAccessToken(
+      user?.id,
+      user?.email,
+      user?.firstname,
+      `${user?.firstname} ${user?.lastname}`,
+    );
+    const refreshToken = generateRefreshToken(user.id);
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        success: true,
+        message: "Access token renewed",
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      data: error,
+      message: "Failed to refresh access tokens",
     });
   }
 };
