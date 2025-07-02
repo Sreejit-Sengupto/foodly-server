@@ -21,20 +21,22 @@ enum Role {
 }
 
 model User {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   firstname      String
   lastname       String?
-  isVerified     Boolean  @default(false)
+  isVerified     Boolean   @default(false)
   provider       String?
   providerId     String?
-  role           Role     @default(CUSTOMER)
+  role           Role      @default(CUSTOMER)
   profilePicture String?
-  mobileNumber   String?  @unique
-  username       String   @unique @default(nanoid())
-  email          String   @unique
+  mobileNumber   String?   @unique
+  username       String    @unique @default(nanoid())
+  email          String    @unique
   password       String?
   refreshToken   String?
-  loginCount     Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now()) @updatedAt
+  loginCount     Int       @default(0)
+  otp            String?
+  otpExpiry      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
 }

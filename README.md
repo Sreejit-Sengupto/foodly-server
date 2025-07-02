@@ -227,13 +227,13 @@ src/
 
 ### Authentication
 
-| Method | Endpoint              | Description                   | Body                                              | Protected |
-| ------ | --------------------- | ----------------------------- | ------------------------------------------------- | --------- |
-| `POST` | `/register`           | Register new user with email  | `{ firstname, lastname?, email, password, role }` | No        |
-| `POST` | `/login`              | Login with email and password | `{ email, password }`                             | No        |
-| `POST` | `/verify-token`       | Verify JWT/email token        | `{ token, setPassword }`                          | No        |
-| `POST` | `/logout`             | Logout user (clear tokens)    | -                                                 | Yes       |
-| `POST` | `/send-welcome-mail`  | Send welcome mail to users    | `{ firstname, email }`                            | No        |
+| Method | Endpoint             | Description                   | Body                                              | Protected |
+| ------ | -------------------- | ----------------------------- | ------------------------------------------------- | --------- |
+| `POST` | `/register`          | Register new user with email  | `{ firstname, lastname?, email, password, role }` | No        |
+| `POST` | `/login`             | Login with email and password | `{ email, password }`                             | No        |
+| `POST` | `/verify-token`      | Verify JWT/email token        | `{ token, setPassword }`                          | No        |
+| `POST` | `/logout`            | Logout user (clear tokens)    | -                                                 | Yes       |
+| `POST` | `/send-welcome-mail` | Send welcome mail to users    | `{ firstname, email }`                            | No        |
 
 #### Google OAuth
 

@@ -22,3 +22,13 @@ export const sendWelcomMailSchema = z.object({
   firstname: z.string(),
   email: z.string().email(),
 });
+
+export const otpVerificationSchema = z.object({
+  otp: z.string(),
+  email: z.string().email(),
+});
+
+export const resendOTPSchema = z.object({
+  firstname: z.string(),
+  email: z.string().email(),
+});

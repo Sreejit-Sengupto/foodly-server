@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import {
   loginSchema,
+  otpVerificationSchema,
   registrationSchema,
+  resendOTPSchema,
   sendWelcomMailSchema,
   tokenVerificationSchema,
 } from "../../validation/auth";
@@ -17,6 +19,7 @@ import {
 } from "../../utils/JWTTokens";
 import { FRONTEND_VERIFICATION_URL } from "../../constants";
 import { welcomeEmailTemplate } from "../../utils/email-templates/welcome-email";
+import { generateOTP } from "../../utils/generateOTP";
 
 export const registerUser = async (req: Request, res: Response) => {
   const parseRes = registrationSchema.safeParse(req.body);
@@ -37,12 +40,17 @@ export const registerUser = async (req: Request, res: Response) => {
 
     if (!user) {
       const password = await bcrypt.hash(reqData.password, 10);
+      const OTP = generateOTP();
+      const otpExpiryDate = new Date(Date.now() + 15000 * 60); // 15 mins
+
       const createdUser = await prisma.user.create({
         data: {
           email: reqData.email,
           firstname: reqData.firstname,
           lastname: reqData.lastname,
           password,
+          otp: OTP,
+          otpExpiry: otpExpiryDate,
           provider: "EMAIL",
           role: reqData.role,
         },
@@ -52,17 +60,9 @@ export const registerUser = async (req: Request, res: Response) => {
         },
       });
 
-      // send verification mail
-      const verificationToken = generateEmailVerificationToken(
-        createdUser.id,
-        createdUser.email,
-        createdUser.firstname,
-      );
-      const verificationLink = `${FRONTEND_VERIFICATION_URL}?token=${verificationToken}`;
-
       const emailTemplate = verificationMailTemplate(
         createdUser.firstname,
-        verificationLink,
+        OTP,
       );
       await sendMail(
         createdUser.email,
@@ -83,18 +83,19 @@ export const registerUser = async (req: Request, res: Response) => {
     // 2. if provider  = "Email", return a message for logging in
     switch (user.provider) {
       case "GOOGLE":
-        // send verification mail
-        const verificationToken = generateEmailVerificationToken(
-          user.id,
-          user.email,
-          user.firstname,
-        );
-        const verificationLink = `${FRONTEND_VERIFICATION_URL}?token=${verificationToken}&setPassword=true`;
+        const OTP = generateOTP();
+        const otpExpiryDate = new Date(Date.now() + 15000 * 60); // 15 mins
 
-        const emailTemplate = verificationMailTemplate(
-          user.firstname,
-          verificationLink,
-        );
+        await prisma.user.update({
+          where: { email: user.email },
+          data: {
+            otp: OTP,
+            otpExpiry: otpExpiryDate,
+          },
+        });
+
+        const emailTemplate = verificationMailTemplate(user.firstname, OTP);
+
         await sendMail(
           user.email,
           "Verify your email to set password - Foodly",
@@ -235,8 +236,8 @@ export const logoutUser = async (req: Request, res: Response) => {
   }
 };
 
-export const verifyToken = async (req: Request, res: Response) => {
-  const parseRes = tokenVerificationSchema.safeParse(req.body);
+export const verifyOTP = async (req: Request, res: Response) => {
+  const parseRes = otpVerificationSchema.safeParse(req.body);
 
   if (!parseRes.success) {
     res.status(400).json({
@@ -248,22 +249,73 @@ export const verifyToken = async (req: Request, res: Response) => {
   const reqData = parseRes.data;
 
   try {
-    const decodedToken = verifyAcesssJWT(reqData.token);
-    if (!decodedToken) {
+    const user = await prisma.user.findFirst({
+      where: { email: reqData.email },
+    });
+
+    if (!user) {
       res.status(404).json({
-        message: "Failed to verify. Token may have expired",
+        message: "No user found with this email",
+      });
+      return;
+    }
+
+    if (user?.otp !== reqData.otp) {
+      res.status(409).json({
+        success: false,
+        message: "Invalid OTP. OTP must have expired",
       });
     }
 
     res.status(200).json({
-      verified: true,
-      message: "Verified",
+      success: true,
+      message: "OTP verified",
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       data: error,
-      message: "Failed to verify token",
+      message: "Failed to verify OTP",
+    });
+  }
+};
+
+export const resendOTP = async (req: Request, res: Response) => {
+  const parseRes = resendOTPSchema.safeParse(req.body);
+
+  if (!parseRes.success) {
+    res.status(400).json({
+      errors: parseRes.error.flatten(),
+    });
+    return;
+  }
+
+  const reqData = parseRes.data;
+
+  try {
+    const OTP = generateOTP();
+    const otpExpiryDate = new Date(Date.now() + 15000 * 60); // 15 mins
+
+    await prisma.user.update({
+      where: { email: reqData.email },
+      data: {
+        otp: OTP,
+        otpExpiry: otpExpiryDate,
+      },
+    });
+
+    const emailTemplate = verificationMailTemplate(reqData.firstname, OTP);
+
+    await sendMail(
+      reqData.email,
+      "Verify your email to set password - Foodly",
+      emailTemplate,
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      data: error,
+      message: "Failed to resend OTP",
     });
   }
 };
