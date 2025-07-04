@@ -6,7 +6,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true,
   }),
 );
@@ -25,8 +25,13 @@ app.get("/test", async (req, res) => {
 
 import OAuthRouter from "./routes/auth/oauth.route";
 import authRouter from "./routes/auth/auth.route";
+import userRouter from "./routes/user/user.route";
 
+// authentication
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/oauth", OAuthRouter);
+
+// user
+app.use("/api/v1/user", userRouter);
 
 export { app };

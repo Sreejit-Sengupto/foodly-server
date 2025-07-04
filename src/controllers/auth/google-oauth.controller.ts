@@ -139,7 +139,7 @@ export const handleGoogleOAuthCallback = async (
     // Save to cookies and send response
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
 
     // send mail
@@ -152,10 +152,7 @@ export const handleGoogleOAuthCallback = async (
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
-      .json({
-        user,
-        message: "User logged in successfully",
-      });
+      .redirect("http://localhost:5173/");
   } catch (error: any) {
     console.error(
       "Error exchanging code for tokens:",
