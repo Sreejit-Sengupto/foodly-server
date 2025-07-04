@@ -216,7 +216,7 @@ export const logoutUser = async (req: Request, res: Response) => {
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
 
     res
