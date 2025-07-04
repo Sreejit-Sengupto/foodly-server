@@ -234,6 +234,7 @@ src/
 | `POST` | `/verify-token`      | Verify JWT/email token        | `{ token, setPassword }`                          | No        |
 | `POST` | `/logout`            | Logout user (clear tokens)    | -                                                 | Yes       |
 | `POST` | `/send-welcome-mail` | Send welcome mail to users    | `{ firstname, email }`                            | No        |
+| `POST` | `/refresh-token`     | Refresh Access token          | -                                                 | Yes       |
 
 #### Google OAuth
 
