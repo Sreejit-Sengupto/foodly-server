@@ -21,6 +21,8 @@ export const createGoogleOauthEndpoint = (req: Request, res: Response) => {
   const rootUrl = GOOGLE_OAUTH_ROOT_URL;
   const redirectUri = GOOGLE_OAUTH_REDIRECT_URI;
 
+  const state = Buffer.from(JSON.stringify({ role })).toString("base64");
+
   const options = {
     redirect_uri: redirectUri,
     client_id: process.env.GOOGLE_CLIENT_ID!,
@@ -28,6 +30,7 @@ export const createGoogleOauthEndpoint = (req: Request, res: Response) => {
     response_type: "code",
     prompt: "consent",
     scope: ["openid", "email", "profile"].join(" "),
+    state,
   };
 
   const queryString = new URLSearchParams(options);
@@ -47,6 +50,11 @@ export const handleGoogleOAuthCallback = async (
   res: Response,
 ) => {
   const code = req.query.code;
+  const decoded = JSON.parse(
+    Buffer.from(req.query.state as string, "base64").toString("utf-8"),
+  );
+  const role = decoded.role;
+
   // const userRole: "EATERY" | "CUSTOMER" = req.cookies.userRole
 
   if (!code) {
@@ -89,7 +97,7 @@ export const handleGoogleOAuthCallback = async (
         email: userData.email,
         firstname: userData.name.split(" ")[0],
         lastname: userData.name.split(" ")[1],
-        // role: userRole ? userRole : "CUSTOMER",
+        role: role as "CUSTOMER" | "EATERY",
         provider: "GOOGLE",
         providerId: userData.sub,
         profilePicture: userData.picture,
