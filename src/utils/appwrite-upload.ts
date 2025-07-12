@@ -17,14 +17,6 @@ class InputFile {
   }
 }
 
-// exports.InputFile = InputFile;
-//# sourceMappingURL=out.js.map
-//# sourceMappingURL=inputFile.js.map
-
-console.log("Endpoint: ", process.env.APPWRITE_ENDPOINT!);
-console.log("ID: ", process.env.APPWRITE_PROJECT_ID!);
-console.log("Key: ", process.env.APPWRITE_API_KEY!);
-
 const client = new sdk.Client()
   .setEndpoint(process.env.APPWRITE_ENDPOINT!)
   .setProject(process.env.APPWRITE_PROJECT_ID!)
