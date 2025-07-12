@@ -20,6 +20,12 @@ enum Role {
   EATERY
 }
 
+enum MediaType {
+  PROFILE
+  MENU_ITEM
+  EATERY_COVER
+}
+
 model User {
   id             String    @id @default(uuid())
   firstname      String
@@ -39,4 +45,11 @@ model User {
   otpExpiry      DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
+}
+
+model ShortURL {
+  id       String    @id @default(uuid())
+  url      String
+  filename String
+  type     MediaType @default(PROFILE)
 }

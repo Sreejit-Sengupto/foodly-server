@@ -28,6 +28,7 @@ import OAuthRouter from "./routes/auth/oauth.route";
 import authRouter from "./routes/auth/auth.route";
 import userRouter from "./routes/user/user.route";
 import mediaRouter from "./routes/media/media.route";
+import shortURLHandler from "./routes/short-url/shortURL.route";
 
 // authentication
 app.use("/api/v1/auth", authRouter);
@@ -38,5 +39,8 @@ app.use("/api/v1/user", userRouter);
 
 // media
 app.use("/api/v1/media", mediaRouter);
+
+// short URL
+app.use("/short-url", shortURLHandler);
 
 export { app };
