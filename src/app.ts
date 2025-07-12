@@ -13,6 +13,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 app.use(cookieParser());
 
 app.get("/test", async (req, res) => {
@@ -26,6 +27,7 @@ app.get("/test", async (req, res) => {
 import OAuthRouter from "./routes/auth/oauth.route";
 import authRouter from "./routes/auth/auth.route";
 import userRouter from "./routes/user/user.route";
+import mediaRouter from "./routes/media/media.route";
 
 // authentication
 app.use("/api/v1/auth", authRouter);
@@ -33,5 +35,8 @@ app.use("/api/v1/oauth", OAuthRouter);
 
 // user
 app.use("/api/v1/user", userRouter);
+
+// media
+app.use("/api/v1/media", mediaRouter);
 
 export { app };
