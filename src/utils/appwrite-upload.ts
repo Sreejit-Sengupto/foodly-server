@@ -1,4 +1,6 @@
 import sdk, { ID } from "node-appwrite";
+import { prisma } from "../db";
+import { BACKEND_URL } from "../constants";
 const nodeFetchNativeWithAgent = require("node-fetch-native-with-agent");
 const fs = require("fs");
 
@@ -38,6 +40,14 @@ export const uploadToAppwrite = async (filepath: string, filename: string) => {
     // get the file
     const fileUrl = `${process.env.APPWRITE_ENDPOINT}/storage/buckets/${process.env.APPWRITE_BUCKET_ID}/files/${uploadedMedia.$id}/view?project=${process.env.APPWRITE_PROJECT_ID}`;
 
+    const shortURL = await prisma.shortURL.create({
+      data: {
+        url: fileUrl,
+        filename: filename,
+      },
+    });
+
+    return `${BACKEND_URL}/short-url/${shortURL.id}`;
     return fileUrl;
   } catch (error: any) {
     console.error(error);

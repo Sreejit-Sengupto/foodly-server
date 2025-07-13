@@ -7,3 +7,5 @@ export const GOOGLE_OAUTH_REDIRECT_URI =
 export const GOOGLE_ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export const FRONTEND_VERIFICATION_URL = `http://localhost:5173/email/verify`;
+
+export const BACKEND_URL = "http://localhost:3001";
