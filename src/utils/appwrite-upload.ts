@@ -26,7 +26,11 @@ const client = new sdk.Client()
 
 const storage = new sdk.Storage(client);
 
-export const uploadToAppwrite = async (filepath: string, filename: string) => {
+export const uploadToAppwrite = async (
+  filepath: string,
+  filename: string,
+  type?: "MENU_ITEM" | "EATERY_COVER",
+) => {
   try {
     const file = InputFile.fromPath(filepath, filename);
     const uploadedMedia = await storage.createFile(
@@ -44,11 +48,11 @@ export const uploadToAppwrite = async (filepath: string, filename: string) => {
       data: {
         url: fileUrl,
         filename: filename,
+        type,
       },
     });
 
     return `${BACKEND_URL}/short-url/${shortURL.id}`;
-    return fileUrl;
   } catch (error: any) {
     console.error(error);
     throw new Error(error.message);

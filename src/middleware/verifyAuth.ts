@@ -37,6 +37,7 @@ export const verifyAuth = async (
       email: user.email,
       firstname: user.email,
       profilePicture: user.profilePicture ?? "",
+      role: user.role,
     };
 
     req.user = reqBodyUser;
