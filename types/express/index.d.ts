@@ -7,6 +7,7 @@ declare module "express-serve-static-core" {
       email: string;
       firstname: string;
       profilePicture: string;
+      role: "CUSTOMER" | "EATERY" | "ADMIN";
     };
   }
 }

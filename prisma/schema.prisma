@@ -26,25 +26,79 @@ enum MediaType {
   EATERY_COVER
 }
 
+enum CuisineType {
+  NORTH_INDIAN
+  SOUTH_INDIAN
+  CHINESE
+  ITALIAN
+  MEXICAN
+  CONTINENTAL
+  THAI
+  JAPANESE
+  MEDITERRANEAN
+  STREET_FOOD
+  LOCAL_DELICACY
+}
+
+enum IndianState {
+  ANDHRA_PRADESH
+  ARUNACHAL_PRADESH
+  ASSAM
+  BIHAR
+  CHHATTISGARH
+  GOA
+  GUJARAT
+  HARYANA
+  HIMACHAL_PRADESH
+  JHARKHAND
+  KARNATAKA
+  KERALA
+  MADHYA_PRADESH
+  MAHARASHTRA
+  MANIPUR
+  MEGHALAYA
+  MIZORAM
+  NAGALAND
+  ODISHA
+  PUNJAB
+  RAJASTHAN
+  SIKKIM
+  TAMIL_NADU
+  TELANGANA
+  TRIPURA
+  UTTAR_PRADESH
+  UTTARAKHAND
+  WEST_BENGAL
+  ANDAMAN_AND_NICOBAR_ISLANDS
+  CHANDIGARH
+  DADRA_AND_NAGAR_HAVELI_AND_DAMAN_AND_DIU
+  DELHI
+  JAMMU_AND_KASHMIR
+  LADAKH
+  LAKSHADWEEP
+  PUDUCHERRY
+}
+
 model User {
-  id             String    @id @default(uuid())
+  id             String     @id @default(uuid())
   firstname      String
   lastname       String?
-  isVerified     Boolean   @default(false)
+  isVerified     Boolean    @default(false)
   provider       String?
   providerId     String?
-  role           Role      @default(CUSTOMER)
+  role           Role       @default(CUSTOMER)
   profilePicture String?
-  mobileNumber   String?   @unique
-  username       String    @unique @default(nanoid())
-  email          String    @unique
+  mobileNumber   String?    @unique
+  username       String     @unique @default(nanoid())
+  email          String     @unique
   password       String?
+  eateries       Eateries[]
   refreshToken   String?
-  loginCount     Int       @default(0)
+  loginCount     Int        @default(0)
   otp            String?
   otpExpiry      DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @default(now()) @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @default(now()) @updatedAt
 }
 
 model ShortURL {
@@ -52,4 +106,25 @@ model ShortURL {
   url      String
   filename String
   type     MediaType @default(PROFILE)
+}
+
+model Eateries {
+  id             String      @id @default(uuid())
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  name           String
+  cusineType     CuisineType @default(LOCAL_DELICACY)
+  email          String
+  phone          String
+  description    String
+  addressLineOne String
+  addressLineTwo String?
+  city           String
+  state          IndianState
+  pincode        String
+  operatingHours Json?
+  isOpen         Boolean     @default(false)
+  images         String[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @default(now()) @updatedAt
 }
