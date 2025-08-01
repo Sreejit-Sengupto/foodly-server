@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  // output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -79,6 +79,36 @@ enum IndianState {
   PUDUCHERRY
 }
 
+enum MenuItemTag {
+  VEG
+  NON_VEG
+  VEGAN
+  GLUTEN_FREE
+  DAIRY_FREE
+  SPICY
+  SWEET
+  HEALTHY
+  HIGH_PROTEIN
+  LOW_CALORIE
+  CHEF_SPECIAL
+  SEASONAL
+  KIDS_FRIENDLY
+  QUICK_BITE
+}
+
+enum Availability {
+  AVAILABLE
+  UNAVAILABLE
+  LIMITED
+  OUT_OF_STOCK
+  COMING_SOON
+}
+
+enum ServiceType {
+  DINE_IN
+  TAKEAWAY
+}
+
 model User {
   id             String     @id @default(uuid())
   firstname      String
@@ -109,11 +139,12 @@ model ShortURL {
 }
 
 model Eateries {
-  id             String      @id @default(uuid())
-  user           User        @relation(fields: [userId], references: [id])
+  id             String        @id @default(uuid())
+  user           User          @relation(fields: [userId], references: [id])
   userId         String
+  menuItems      MenuItems[]
   name           String
-  cusineType     CuisineType @default(LOCAL_DELICACY)
+  cusineType     CuisineType   @default(LOCAL_DELICACY)
   email          String
   phone          String
   description    String
@@ -123,8 +154,26 @@ model Eateries {
   state          IndianState
   pincode        String
   operatingHours Json?
-  isOpen         Boolean     @default(false)
+  isOpen         Boolean       @default(false)
+  services       ServiceType[]
   images         String[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @default(now()) @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now()) @updatedAt
+}
+
+model MenuItems {
+  id           String        @id @default(uuid())
+  eatery       Eateries      @relation(fields: [eateryId], references: [id])
+  eateryId     String
+  name         String
+  description  String
+  price        Decimal
+  discount     Decimal?
+  availability Availability  @default(AVAILABLE)
+  images       String[]
+  prepTimeMin  Int
+  isFeatured   Boolean       @default(false)
+  tags         MenuItemTag[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
 }

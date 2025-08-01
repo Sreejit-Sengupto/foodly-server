@@ -60,6 +60,7 @@ export const createEateryHanlder = async (req: Request, res: Response) => {
         email: reqData.email,
         phone: reqData.phone,
         description: reqData.description,
+        services: ["TAKEAWAY"],
         addressLineOne: reqData.addressLineOne,
         addressLineTwo: reqData.addressLineTwo,
         city: reqData.city,

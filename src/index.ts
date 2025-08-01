@@ -1,3 +1,4 @@
+/// <reference types="dotenv" />
 import dotenv from "dotenv";
 import { app } from "./app";
 import { PORT } from "./constants";
