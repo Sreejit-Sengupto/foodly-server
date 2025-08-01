@@ -71,14 +71,23 @@ RESEND_API_KEY=your_resend_api_key
 
 #### Required Environment Variables:
 
-| Variable               | Description                  | Example                                        |
-| ---------------------- | ---------------------------- | ---------------------------------------------- |
-| `DATABASE_URL`         | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/foodly` |
-| `GOOGLE_CLIENT_ID`     | Google OAuth client ID       | Get from Google Cloud Console                  |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret   | Get from Google Cloud Console                  |
-| `ACCESS_TOKEN_SECRET`  | JWT access token secret      | Generate a secure random string                |
-| `REFRESH_TOKEN_SECRET` | JWT refresh token secret     | Generate a secure random string                |
-| `RESEND_API_KEY`       | Resend email service API key | Get from Resend dashboard                      |
+| Variable               | Description                             | Example                                          |
+| ---------------------- | --------------------------------------- | ------------------------------------------------ |
+| `DATABASE_URL`         | PostgreSQL connection string            | `postgresql://user:pass@localhost:5432/foodly`   |
+| `DATABASE_URL_DOCKER`  | PostgreSQL connection string for Docker | `postgresql://user:pass@postgres_db:5432/foodly` |
+| `GOOGLE_CLIENT_ID`     | Google OAuth client ID                  | Get from Google Cloud Console                    |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret              | Get from Google Cloud Console                    |
+| `ACCESS_TOKEN_SECRET`  | JWT access token secret                 | Generate a secure random string                  |
+| `REFRESH_TOKEN_SECRET` | JWT refresh token secret                | Generate a secure random string                  |
+| `RESEND_API_KEY`       | Resend email service API key            | Get from Resend dashboard                        |
+
+**Check the .env.example file**
+
+## 2 Steps Setup using Docker
+
+1. Add the required envs in the .env file
+2. `docker compose up` to run the application. That's it!
+3. `npm run migrate` to run DB migrations.
 
 ## Database Setup
 

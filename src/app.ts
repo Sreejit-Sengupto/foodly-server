@@ -28,7 +28,9 @@ import OAuthRouter from "./routes/auth/oauth.route";
 import authRouter from "./routes/auth/auth.route";
 import userRouter from "./routes/user/user.route";
 import mediaRouter from "./routes/media/media.route";
-import shortURLHandler from "./routes/short-url/shortURL.route";
+import shortURLRouter from "./routes/short-url/shortURL.route";
+import eateryRouter from "./routes/eatery/eatery.route";
+import menuRouter from "./routes/eatery/menu.route";
 
 // authentication
 app.use("/api/v1/auth", authRouter);
@@ -37,10 +39,14 @@ app.use("/api/v1/oauth", OAuthRouter);
 // user
 app.use("/api/v1/user", userRouter);
 
+// eateris
+app.use("/api/v1/eatery", eateryRouter);
+app.use("/api/v1/menu", menuRouter);
+
 // media
 app.use("/api/v1/media", mediaRouter);
 
 // short URL
-app.use("/short-url", shortURLHandler);
+app.use("/short-url", shortURLRouter);
 
 export { app };

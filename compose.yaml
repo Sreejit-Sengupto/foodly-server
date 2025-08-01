@@ -1,0 +1,58 @@
+# version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres
+    container_name: foodly_db_dock
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres_db}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    networks:
+      - foodlynet
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foodly-server
+    restart: unless-stopped
+    ports:
+      - 3001:3001
+    networks:
+      - foodlynet
+    env_file:
+      - ./.env
+    environment:
+      - DB_HOST=postgres_db
+      - DATABASE_URL=${DATABASE_URL_DOCKER}
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    develop:
+      watch:
+        - path: .
+          action: sync
+          target: /app
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  foodlynet:
+    driver: bridge
